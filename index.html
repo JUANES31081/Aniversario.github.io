@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 Años de Amor</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+        }
+        .stars-background {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .star-bg {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle 3s infinite alternate, moveStar 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.5; }
+        }
+
+        @keyframes moveStar {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(calc(-5px + 10px * random()), calc(-5px + 10px * random())); }
+            100% { transform: translate(0, 0); }
+        }
+        .timeline {
+            position: absolute;
+            top: 190%;
+            left: 8.5%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        .star {
+            background: white;
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: absolute;
+            animation: twinkle 3s infinite alternate ease-in-out;
+        }
+
+        .star:hover {
+            transform: scale(1.5);
+        }
+
+        /* ✨ Parpadeo y crecimiento aleatorio */
+        @keyframes twinkle {
+            0% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+            100% { opacity: 0.6; transform: scale(1); }
+        }
+        .photo-expanded {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 50%;
+            height: 50%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            transition: transform 0.4s, opacity 0.3s;
+        }
+        .photo-expanded img {
+            width: 50%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .photo-expanded p {
+            color: white;
+            margin-top: 10px;
+        }
+        .photo-expanded.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        canvas {
+            position: absolute;
+            top: 500%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        #heart {
+            position: absolute;
+            top: 60%; /* Ajusta este valor para bajarlo */
+            left: 45%; /* Ajusta este valor para centrarlo */
+            transform: translate(-50%, -50%); /* Mantiene el centro relativo */
+            }
+    </style>
+</head>
+<body>
+    <div class="stars-background"></div>
+    <h1 class="title">🌟 3 Años de Amor 🌟</h1>
+    <h4>Esta pagina representa nuestro amor con una linea de tiempo bajo una noche estrellada 
+        quiero que la veas cada que quieras tioene una foto por cada mes de relacion y un texto de este servidor</h4>
+    <canvas id="heartCanvas"></canvas>
+    <div class="timeline"></div>
+    <div class="photo-expanded" id="photoModal">
+        <img src="" alt="" id="modalImage">
+        <p id="modalText"></p>
+    </div>
+    <script>
+        const images = [
+            { src: "imgs/1.jpg", text: "Uno de los primeros regalos que me diste y no sabes lo feliz que me hizo porque me hizo sentir parte de ti 😻😼" },
+            { src: "imgs/2.jpg", text: "Nuestra primera foto juntos, pido perdon por tanta pena que sentia al principio por momentos asi, eran extraños y nuevos para mi ❤️😻" },
+            { src: "imgs/3.jpg", text: "Esta foto en realidad tiene mucho trasfondo para mi, fue algo muy bonito y adicional me sentia muy feliz de estar a tu lado, me sentia completo como lo sigo sintiendo a dia de hoy 🐨🐸" },
+            { src: "imgs/4.jpg", text: "Una de las mas complicadas, este momento fue muy duro para ti, y tambien para mi estuve muy preocupado por ti, fue la primera vez tambien que te visite en tu casita luego de la cirugia y siento que fue muy especial y bonito ❤️🦦" },
+            { src: "imgs/5.jpg", text: "Nuestra primera salida a un lugar nuevo para mi, todo era como WOW y fue gracias a ti me ayudaste a conocer mas del mundo y a ver que existia mucho mas alla de lo que siempre veo, (aun a dia de hoy lo sigues haciendo) 🦭❤️" },
+            { src: "imgs/6.jpg", text: "Fotito en la universidad, siempre me gusto mucho que me acompañaras a todo lado 🐨🐸" },
+            { src: "imgs/7.jpg", text: "Nosotros combinados jajaj me encanta mucho esto la verdad de vestirnos similar o pues con una tematica y no quisiera que lo dejaramos de lado 😻" },
+            { src: "imgs/8.jpg", text: "El dia que fuimos al SOFA, creo que ya sabes lo especial que fue para mi sin importar que paso luego de eso con repecto a muchas cosas, siento que fue algo muy bonito que siempre habia querido y hacerlo contigo lo hizo el triple de especial 🦭🐨❤️🐸🦦" },
+            { src: "imgs/9.jpg", text: "La vez que me hiciste el fondito me encanto mucho la verdad se que esta no es una foto de nosotros jaja pero me parecio muy lindo y la tome como este mes. 😾" },
+            { src: "imgs/10.jpg", text: "Tu payaseandome, creo que no existe mucho que decir mas que siempre es algo muy bonito y tambien en realidad me gusta mucho 🤡🤡🤡" },
+            { src: "imgs/11.jpg", text: "Fotico del primer cumple juntos , escogi esta principalmente porque creo muestra todo lo que tengo por decir y es que estaba de verdad muy feliz y me sentia muy bien ❤️❤️" },
+            { src: "imgs/12.jpg", text: "Una de las cosas que mas me enamoro de ti el amor por los animalitos, y creo que es algo que compartimos y me encanta mucho de verdad que eso sea siempre asi 🐩🐇🐨" },
+            { src: "imgs/13.jpg", text: "Este es del cumple tuyo siento que pude hacerlo mejor tal vez pero hice lo mejor que pude en su momento y te di todo el amor que era para mi lo mas importante 🐸" },
+            { src: "imgs/14.jpg", text: "Nosotros en una clase juntos, si no estoy mal la unica clase que si fue juntos de verdad jajaj ame mucho el poder ayudarte y en realidad ayudarte con muchas cosas qeu veia que podia ayudarte ❤️🦭" },
+            { src: "imgs/15.jpg", text: "Siempre junto a ti es lo unico que quiero de verdad 🥹🥹🥹" },
+            { src: "imgs/16.jpg", text: "Cuando te acompañe a tu evento de programacion Lineal para ganarte un compu jaja, me acuerdo mucho de este dia porque recuerdo que estabas muy nerviosa y te ayudo mucho el que te estuviese acompañando y ayudando 👻👻🤓" },
+            { src: "imgs/17.jpg", text: "Viendo una Peli algo que hace rato no hacemos en cine, queria aprovechar mucho e Invitarte a ver una pelicula espero que digas que si, si deseas canjear esta salida me dices en WS 🐨❤️" },
+            { src: "imgs/18.jpg", text: "Uno de los recuerdos mas bonitos que tengo jaja y es que siento que siempre e tratado de darte mucho de mi, y antes apesar de no tener mucho trataba tambien de hacerlo y esta fue una de esas veces dandote u chupito jaja y me encanto tu fotico 🥹❤️" },
+            { src: "imgs/19.jpg", text: "Nosotros goles amandonos creo que no tengo que decir mucho mas que eso, te amo mucho y espero estar mucho mas tiempo contigo ❤️❤️❤️" },
+            { src: "imgs/20.jpg", text: "Acompañandote en una clase de IA, tengo recuerdos muy bonitos de esa clase mas que todo por el orgullo que sentias de que yo supiera y te pudiera ayudar, y adicional decirte que siempre que me necesites estare para ti 👥🐳" },
+            { src: "imgs/21.jpg", text: "Tu lamiendome JAJAJAJ, recuerdo que esto fue en una clase de ambientes la peor clase que pude tener donde me ayudaste mucho a ver que yo podia hacer lo que me propusiera inclusive si no se nada del tema todo es posible creyendo en que lo es y te agradezco por hacer eso ❤️🐸" },
+            { src: "imgs/22.jpg", text: "Los sacos feos jajaj, otro de los sueños que me cumpliste y que me sigues cumpliendo de verdad que haces mucho por mi y yo valoro siempre eso apesar de demostrarlo siempre 🥹❤️🦭" },
+            { src: "imgs/23.jpg", text: "El segundo cumple fue muy bonito la verdad y me ayudaste a optener mucha mas confianza en mi mismo, ademas de muchos detalles que me distye que lo hicieron muy especial de verdad. 🥰😘" },
+            { src: "imgs/24.jpg", text: "Y otro mas este de hecho es muy lindo para mi ya que fue un sueño ciumplido tener un hamster y sin importar cuanto tiempo estan con nosotros dan todo de si, e tratado de implementar ese pensamiento para hacer que sin importar nada siempre de lo mejor ❤️🐳" },
+            { src: "imgs/25.jpg", text: "Tu segundo cumple estuvimos con tus papas trate de dar todo para que fuese el mejor dia, trate de hacerlo lo mas especial posible y creo que asi lo fue y te doy gracias aprovechando por hacer siempre que note que mis esfuerzos valen la pena 🥹❤️" },
+            { src: "imgs/26.jpg", text: "Desde aqui empieza mucho a aparecer luli y esto es principalmente porque se el como te sientes con ella y que es algo que no te puedo dar yo, por lo que siempre e tratado de que ella este mucho contigo, desde que me contaste el amor qeu les tenias pero no habias podido tener uno decidi que ella se convertiria en nuestra bebe ❤️🐩❤️🐨🐸" },
+            { src: "imgs/27.jpg", text: "Uno de los almuerzoz que tuvimos en tu trabajo, fue algo muy bonito siempre, mas que todo porque me ayudaste mucho a estar mejor y siento que yo tambien fui de ayuda siempre para ti 🥹🐳" },
+            { src: "imgs/28.jpg", text: "Tu con tu mini tu, me encanta siempre esta foto jajaj, para mi es de verdad muy bonito poder darte cosas porque apesar que se que no lo es todo, siento que muchas veces tienen mas significado que solo un oso cariñoso por ejemplo 🐨🧸" },
+            { src: "imgs/29.jpg", text: "Luli compartiendo contigo jaja, emputada por la moña pero feliz siempre contigo, y con su pijamita. 🐨🐩" },
+            { src: "imgs/30.jpg", text: "Una Luli en vestido muy feliz siempre porque tu la consientes muchisimo y tratas de siempre darle lo mejor, se qeu siempre te esfuerzas por ello y por lo mismo siempre trato de apoyarte con lo mismo ❤️❤️❤️" },
+            { src: "imgs/31.jpg", text: "La mejor foto de las dos juntas me encanta mucho, como te digo si siento que ella es vital siempre para ti y lo noto mucho espoero poder seguirla cuidando junto contigo mucho mas tiempo 🥹🐩❤️🐨" },
+            { src: "imgs/32.jpg", text: "El siguiente corte de luli esta foto sigue demostrando todo el amor que le das y que siempre le daras y quiero que eso siga asi, te agradezco de verdad mucho todo, y mas qeu en este tiempo no estaba muy bien economicamente y tu me ayudaste con todos los gastos de luli 🥹❤️" },
+            { src: "imgs/33.jpg", text: "Una luli descansando en ti, (queria agregar que seleccione aproposito fotos con luli porque creo que es parte vital de nuestra relacion y mas que todo porque quiero dejar claro que lo son todo para mi las dos mi vidita) 🐨❤️" },
+            { src: "imgs/34.jpg", text: "La primera foto con el celular nuevo de nuestra familia feli, queria darte las gracioas por como te dije estar conm,igo siempre y apoyar todas mis ideas sin importar nada, siendo igual la voz de la consiencia para mi siempre 🐸🐨🐩❤️❤️" },
+            { src: "imgs/35.jpg", text: "Una foto muy bonita de nosotros, que tiene mucho significado la verdad ya qeu fue el dia de mi cumpleaños y siento que en estos 3 años este ha sido el mejor mas que todo porque siento qeu siempre das todo para que sea el mejor y este año fue el mejor definitivamente, gracias por todo  🥹🤓❤️" },
+            { src: "imgs/36.jpg", text: "Siempre quiero ser parte de todos tus procesos y de todas tus ideas y sentimientos creo que esto lo demuestra mas que otras por todo primero el amor segundo el que siempre quiero apoyarte en tus procesos por el de las citas qu eestas tomando y las locuras jaja como tomar fotos asi sin importar nadie mas porque solo importamos nosotros dos el resto que se jodan jaja ❤️❤️❤️🐨🐸" },
+            { src: "imgs/37.jpg", text: "Por ultimo la mas reciente para cumplir con los 36 meses que llevamos juntos esta es muy especial para mi porque el que me dieras la posibilidad de ser parte de tu proceso lo es todo de verdad y me alegra mucho poder seguirlo siendo ❤️🐨🐸❤️🐩" },
+            { src: "imgs/37.jpg", text: "Pot ultimo y con la misma foto queria invitarte el dia sabado a almorzar por nuestro aniversario y adicional por el dia de la mujer, quisiera que lo tengas claro no te voy a decir nada jaja sera sorpresa jaja pero solo que sera algo muy lindo estoy ultimando detalles entonces en caso de querer dar sugerencias te las recibo 🐨🐸🐩❤️" },
+        ];
+
+        function createBackgroundStars() {
+            const starsContainer = document.querySelector(".stars-background");
+            
+            for (let i = 0; i < 100; i++) {
+                let star = document.createElement("div");
+                star.classList.add("star-bg");
+
+                // Tamaño aleatorio
+                let size = Math.random() * 3 + 2;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+
+                // Posición aleatoria
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.left = `${Math.random() * 100}vw`;
+
+                // Duración de la animación aleatoria
+                let twinkleDuration = Math.random() * 2 + 1.5;
+                let moveDuration = Math.random() * 5 + 5;
+                star.style.animationDuration = `${twinkleDuration}s, ${moveDuration}s`;
+
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function createHeartShape() {
+            const timeline = document.querySelector(".timeline");
+            const canvas = document.getElementById("heartCanvas");
+            const ctx = canvas.getContext("2d");
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 2;
+
+            // Coordenadas del corazón (ajustadas al centro)
+            const heartCoords = [];
+            const n = 38; // Número de puntos
+
+            for (let i = 0; i < n; i++) {
+                const t = (Math.PI * 2 * i) / n; // Distribución uniforme en el contorno
+                const x = 50 + 120 * Math.pow(Math.sin(t), 3); // Ajuste de escala y posición
+                const y = 50 - (80 * Math.cos(t) - 22 * Math.cos(2 * t) - 10 * Math.cos(3 * t) - 6 * Math.cos(4 * t));
+
+                heartCoords.push([Math.round(x), Math.round(y)]);
+            }
+            
+            const starElements = [];
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            heartCoords.forEach(([x, y], index) => {
+                let star = document.createElement("div");
+                star.classList.add("star");
+
+                const posX = centerX + (x - 50) * 3.5; // Ajustando la escala
+                const posY = centerY + (y - 50) * 3.5;
+
+                star.style.left = `${posX}px`;
+                star.style.top = `${posY}px`;
+
+                // 🔥 Duraciones aleatorias para cada estrella
+                let twinkleDuration = Math.random() * 2 + 2; // Entre 2 y 4 segundos
+                star.style.animationDuration = `${twinkleDuration}s`;
+
+                star.addEventListener("click", () => showImage(images[index].src, images[index].text));
+
+                timeline.appendChild(star);
+                starElements.push({ x: posX, y: posY });
+            });
+
+            // Dibujar líneas conectando las estrellas con transparencia
+            ctx.beginPath();
+            ctx.moveTo(starElements[0].x, starElements[0].y);
+            starElements.forEach(({ x, y }) => ctx.lineTo(x, y));
+            ctx.closePath();
+
+            // Ajustar la transparencia
+            ctx.globalAlpha = 0.5;  // Ajusta el valor entre 0 (transparente) y 1 (opaco)
+            ctx.strokeStyle = "white";  // Puedes cambiar el color si es necesario
+            ctx.lineWidth = 2;  // Ajusta el grosor de la línea
+            ctx.stroke();
+
+            // Restaurar la opacidad a su valor original
+            ctx.globalAlpha = 1.0;
+        }
+
+        function showImage(src, text) {
+            const modal = document.getElementById("photoModal");
+            document.getElementById("modalImage").src = src;
+            document.getElementById("modalText").textContent = text;
+            modal.classList.add("active");
+            modal.addEventListener("click", () => modal.classList.remove("active"));
+        }
+
+        createBackgroundStars();
+        createHeartShape();
+    </script>
+</body>
+</html>
